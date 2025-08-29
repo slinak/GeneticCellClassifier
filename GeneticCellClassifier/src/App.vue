@@ -1,79 +1,81 @@
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <h1>Upload Here</h1>
+
   <file-handler>
 
   </file-handler>
+  <span>{{ cellClassifications }}</span>
+
 </template>
 
 <script>
-//import FileHandler from './FileHandler.vue';
 
+import { onMounted } from 'vue';
 
 
 export default{
   setup(){
-    //const positiveClassificationsToCellTypes = ParseAndBuildClassificationDictionary();
-    //const simplifiedTestData = ParseAndSimplifyTestData();
-    //const classifications = AssociatePositiveClassificationsToTestData();
+    var simplifiedTestData, positiveClassificationsToCellTypes, cellClassifications;
+    onMounted(async () => {
+      simplifiedTestData = await ParseAndSimplifyTestData();
+      positiveClassificationsToCellTypes = await ParseAndBuildClassificationDictionary();
+      cellClassifications = await AssociatePositiveClassificationsToTestData();
 
-    let positiveClassificationsToCellTypes = "";
-    let simplifiedTestData = "";
-    let classifications = "";
+      console.log("Positive Associated Cell Classifications:");
+      console.log(cellClassifications);
+    });
 
-  function AssociatePositiveClassificationsToTestData() {
-    var associatedData = new Map();
+    async function AssociatePositiveClassificationsToTestData() {
+      var associatedData = new Map();
 
-    simplifiedTestData.forEach(simpleTestData => { associatedData.set(simpleTestData['Object ID'], GetClassificationFromData(simpleTestData['Classification'])); });
+      simplifiedTestData.forEach(simpleTestData => { associatedData.set(simpleTestData['Object ID'], GetClassificationFromData(simpleTestData['Classification'])); });
 
-    return associatedData;
-  }
-  function GetClassificationFromData(sampleClassifications) {
-      var sampleClassification = new Map();
-      
-      sampleClassifications.forEach(sc => { sampleClassification.set(sc, positiveClassificationsToCellTypes.get(sc)); });
+      return associatedData;
+    }
+    function GetClassificationFromData(sampleClassifications) {
+        var sampleClassification = new Map();
+        
+        sampleClassifications.forEach(sc => { sampleClassification.set(sc, positiveClassificationsToCellTypes.get(sc)); });
 
-      return sampleClassification;
-  }
-  
-  function ParseAndBuildClassificationDictionary() {
-      //TODO hard coded file path
-      var classifications = GetJsonFileContents('C:\\Users\\merse\\source\\repos\\GeneClassifier\\GeneClassifier\\data\\qupath_cell_classification_with_trained_object_classifiers.json');
-      var newPositiveClassifications = new Map();
+        return sampleClassification;
+    }
+    
+    async function ParseAndBuildClassificationDictionary() {
+        var classifications = JSON.parse(await GetJsonFileContents('./qupath_cell_classification_with_trained_object_classifiers.json'));
+        var newPositiveClassifications = new Map();
 
-      classifications.forEach(classification => Object.keys(classification).forEach(k => {
-          if (classification[k] == 1)
-              newPositiveClassifications.has(k) ? newPositiveClassifications.get(k).push(classification['Cell Type']) : newPositiveClassifications.set(k, [classification['Cell Type']]);
-      }));
+        classifications.forEach(classification => Object.keys(classifications).forEach(k => {
+            if (classifications[k] == 1)
+                newPositiveClassifications.has(k) ? newPositiveClassifications.get(k).push(classifications['Cell Type']) : newPositiveClassifications.set(k, [classifications['Cell Type']]);
+        }));
 
-      return newPositiveClassifications;
-  }
+        return newPositiveClassifications;
+    }
 
-  function ParseAndSimplifyTestData() {
-      //TODO hard coded file path
-      var testData = GetJsonFileContents('C:\\Users\\merse\\source\\repos\\GeneClassifier\\GeneClassifier\\data\\test data set.json');
-      var testData = "stuff";
-      var newSimplifiedData = [];
+    async function ParseAndSimplifyTestData() {
+        let testData = JSON.parse(await GetJsonFileContents('./test data set.json'));
+        var newSimplifiedData = [];
+        
+        testData.forEach(td => {
+            newSimplifiedData.push({
+                "Object ID": td["Object ID"],
+                "Classification": td["Classification"].split(': '),
+            });
+        });
+        return newSimplifiedData;
+    }
+    
+    async function GetJsonFileContents(filePath) {
+      var fileContents;
 
-      testData.forEach(td => {
-          newSimplifiedData.push({
-              "Object ID": td["Object ID"],
-              "Classification": td["Classification"].split(': '),
-          });
-      });
-
-      return newSimplifiedData;
-  }
-  function GetJsonFileContents(filePath) {
-
-      //return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      return "";
-  }
-
-    return { positiveClassificationsToCellTypes, simplifiedTestData, classifications };
+      await fetch(filePath)
+        .then( res => res.json() )
+        .then( (data) => {
+          fileContents = data;
+        })
+        return JSON.stringify(fileContents);
+    }
+    return { positiveClassificationsToCellTypes, simplifiedTestData, cellClassifications };
   }
 }
 </script>

@@ -1,7 +1,7 @@
     <template>
         <div>
-            <label for="classifierFile">Sample Data: </label>
-            <input id="classifierFile" type="file" @change="handleFileChange" />
+            <label for="classificationsFile">Sample Data: </label>
+            <input id="classificationsFile" type="file" @change="handleFileChange" />
             <p v-if="fileContent">{{ fileContent }}</p>
         </div>
     </template>
