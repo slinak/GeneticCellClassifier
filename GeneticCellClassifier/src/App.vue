@@ -24,7 +24,6 @@ export default{
       simplifiedTestData = await ParseAndSimplifyTestData();
       positiveClassificationsToCellTypes = await ParseAndBuildClassificationDictionary();
       cellClassifications = await AssociatePositiveClassificationsToTestData();
-
       associatedTestData = await GetTestData();
 
       cellClassifications.forEach(c => {
