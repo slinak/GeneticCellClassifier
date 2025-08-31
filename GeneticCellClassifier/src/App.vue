@@ -33,9 +33,7 @@ export default{
       });
     });
 
-    function getPositiveClassifications() {
-      content.value = associatedTestData;
-    }
+    function getPositiveClassifications() { content.value = associatedTestData; }
 
     async function AssociatePositiveClassificationsToTestData() {
       var associatedData = new Map();
