@@ -66,11 +66,11 @@ export default{
     }
 
     async function GetTestData() {
-      return JSON.parse(await GetJsonFileContents('./test data set.json'));
+      return JSON.parse(await GetJsonFileContents('./S10_ROI_Detection_Measurements.json'));
     }
 
     async function ParseAndSimplifyTestData() {
-        let testData = JSON.parse(await GetJsonFileContents('./test data set.json'));
+        let testData = JSON.parse(await GetJsonFileContents('./S10_ROI_Detection_Measurements.json'));
         var newSimplifiedData = [];
         var separator = new RegExp(' :|: ');
         
